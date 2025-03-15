@@ -6,7 +6,7 @@
 (defn get-raw-processses []
   (let [output (:out (sh "lsof" "-i" "-P" "-n"))
         lines (str/split-lines output)
-        header (first lines)
+        _header (first lines)
         rows (rest lines)
         columns [:command :pid :user :id :type :device :size-off :node :name]]
     (map (fn [row]
@@ -59,7 +59,7 @@
   (let [processes (get-processes)
         formatted (map #(str (:port (:name %)) " - " (:command %)) processes)
         input-str (str/join "\n" formatted)
-        {:keys [out err exit]} (sh "fzf" :in input-str)]
+        {:keys [out _err exit]} (sh "fzf" :in input-str)]
     (when (zero? exit)
       (-> out
           (str/split #" - ")
@@ -68,7 +68,8 @@
 
 (defn print-usage-and-exit []
   (println "fzf not found. Use the following syntax instead:
-Usage: sniffkill <port>\nKills the process listening on the given port.")
+Usage: sniffkill <port>
+Kills the process listening on the given port.")
   (System/exit 1))
 
 (defn get-port-or-exit [args]
