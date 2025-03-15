@@ -71,13 +71,16 @@
 Usage: sniffkill <port>\nKills the process listening on the given port.")
   (System/exit 1))
 
+(defn get-port-or-exit [args]
+  (if (empty? args)
+    (if (fzf-installed?)
+      (fzf-select-process)
+      (print-usage-and-exit))
+    (parse-int (first args))))
+
 (defn -main
   [& args]
-  (let [port (if (empty? args)
-               (if (fzf-installed?)
-                 (fzf-select-process)
-                 (print-usage-and-exit))
-               (parse-int (first args)))]
+  (let [port (get-port-or-exit args)]
     (if (number? port)
       (do
         (println (str "Attempting to kill process on port " port "..."))
